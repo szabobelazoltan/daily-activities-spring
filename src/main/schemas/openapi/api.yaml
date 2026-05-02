@@ -1,0 +1,198 @@
+openapi: 3.0.3
+info:
+  title: Calendar Activity Service
+  version: 1.5.0
+
+servers:
+  - url: https://api.example.com
+
+security:
+  - basicAuth: []
+
+paths:
+  /activities:
+    get:
+      summary: List activities for the authenticated user in a date range
+      description: |
+        Returns activities grouped by day. Each day contains all activities
+        whose start or end time falls within that date. If only `start` is
+        provided, returns activities from that date onward. If only `end` is
+        provided, returns activities up to that date.
+      parameters:
+        - name: start
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Start of the period (inclusive)
+        - name: end
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: End of the period (inclusive)
+      responses:
+        '200':
+          description: Activities grouped by day
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                    activities:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Activity'
+
+    post:
+      summary: Add a new activity to the authenticated user's calendar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewActivity'
+      responses:
+        '201':
+          description: Activity created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+
+  /activities/{activityId}/cancel:
+    put:
+      summary: Cancel an existing activity
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Activity cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /activities/{activityId}/postpone:
+    put:
+      summary: Postpone an activity to a new date/time
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newStart:
+                  type: string
+                  format: date-time
+                newEnd:
+                  type: string
+                  format: date-time
+              required: [newStart]
+      responses:
+        '200':
+          description: Activity postponed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /activities/{activityId}:
+    delete:
+      summary: Remove an activity from the calendar
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Activity removed
+        '404':
+          description: Activity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    NewActivity:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+      required: [title, start]
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [scheduled, cancelled]
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "not_found"
+        message:
+          type: string
+          example: "Activity not found"
