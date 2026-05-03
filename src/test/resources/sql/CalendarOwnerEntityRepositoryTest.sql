@@ -1,0 +1,1 @@
+INSERT INTO "CALENDAR_OWNER" ("ID", "NAME") VALUES (-1, 'john.doe');

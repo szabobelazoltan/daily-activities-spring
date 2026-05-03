@@ -75,7 +75,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: long
       responses:
         '200':
           description: Activity cancelled
@@ -98,7 +98,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: long
       requestBody:
         required: true
         content:
@@ -135,7 +135,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            type: long
       responses:
         '204':
           description: Activity removed
@@ -172,7 +172,7 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: long
         title:
           type: string
         description:
