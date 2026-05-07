@@ -1,5 +1,7 @@
 package hu.szbz.das.persistence.repositories;
 
+import hu.szbz.das.errors.DailyActivitiesException;
+import hu.szbz.das.errors.ErrorCode;
 import hu.szbz.das.persistence.model.ActivityEntity;
 import hu.szbz.das.persistence.model.CalendarOwnerEntity;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,8 @@ public interface ActivityEntityRepository extends CrudRepository<ActivityEntity,
 
     @Query("SELECT a FROM ActivityEntity a WHERE a.calendarOwner = :user AND a.startDateTime <= :designated AND a.endDateTime > :designated")
     Optional<ActivityEntity> findByUserAndBounds(@Param("user") CalendarOwnerEntity calendarOwner, @Param("designated") OffsetDateTime designated);
+
+    default ActivityEntity checkedFindById(Long id) {
+        return findById(id).orElseThrow(() -> new DailyActivitiesException(String.format("Activity was not found with id: %d", id), ErrorCode.ACTIVITY_NOT_FOUND));
+    }
 }

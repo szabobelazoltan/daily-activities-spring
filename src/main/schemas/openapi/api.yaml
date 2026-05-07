@@ -67,9 +67,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Activity'
 
-  /activities/{activityId}/cancel:
+  /activities/{activityId}/complete:
     put:
-      summary: Cancel an existing activity
+      summary: Completes an existing activity
       parameters:
         - name: activityId
           in: path
@@ -78,44 +78,7 @@ paths:
             type: long
       responses:
         '200':
-          description: Activity cancelled
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Activity'
-        '404':
-          description: Activity not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /activities/{activityId}/postpone:
-    put:
-      summary: Postpone an activity to a new date/time
-      parameters:
-        - name: activityId
-          in: path
-          required: true
-          schema:
-            type: long
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                newStart:
-                  type: string
-                  format: date-time
-                newEnd:
-                  type: string
-                  format: date-time
-              required: [newStart]
-      responses:
-        '200':
-          description: Activity postponed
+          description: Activity completed
           content:
             application/json:
               schema:
@@ -129,7 +92,7 @@ paths:
 
   /activities/{activityId}:
     delete:
-      summary: Remove an activity from the calendar
+      summary: Cancels an activity
       parameters:
         - name: activityId
           in: path
@@ -138,7 +101,7 @@ paths:
             type: long
       responses:
         '204':
-          description: Activity removed
+          description: Activity cancelled
         '404':
           description: Activity not found
           content:
@@ -185,7 +148,7 @@ components:
           format: date-time
         status:
           type: string
-          enum: [scheduled, cancelled]
+          enum: [scheduled, cancelled, completed]
 
     Error:
       type: object
