@@ -27,6 +27,7 @@ public interface ActivityMapper {
             ActivitiesGet200ResponseInner calendarEntryDto = new ActivitiesGet200ResponseInner();
             calendarEntryDto.setDate(calendarEntry.getKey());
             calendarEntryDto.setActivities(mapToApiModels(calendarEntry.getValue()));
+            rpList.add(calendarEntryDto);
         }
         return rpList;
     }

@@ -74,7 +74,7 @@ public class DailyActivitiesService {
             throw new DailyActivitiesException("Given user is not owner of the activity!", ErrorCode.ACCESS_DENIED);
         }
         if (!ActivityStatus.SCHEDULED.equals(activity.getStatus())) {
-            throw new DailyActivitiesException("Activity is already closed!", ErrorCode.ACTIVITY_NOT_FOUND);
+            throw new DailyActivitiesException("Activity is already closed!", ErrorCode.CLOSED_ACTIVITY);
         }
         activity.setStatus(newStatus);
         return activity;
@@ -90,7 +90,7 @@ public class DailyActivitiesService {
         @Override
         public void accept(ActivityEntity activity) {
             LocalDate groupBy = activity.getStartDateTime().toLocalDate();
-            this.resultMap.putIfAbsent(groupBy, new ArrayList<>()).add(activity);
+            this.resultMap.computeIfAbsent(groupBy, k -> new ArrayList<>()).add(activity);
         }
 
         Map<LocalDate, List<ActivityEntity>> get() {
